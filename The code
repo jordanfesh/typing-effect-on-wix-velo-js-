@@ -1,0 +1,44 @@
+let phrases = ["Lorem Ipsum", "Dolor Amet", "Sit Amet"];
+let currentPhraseIndex = 0;
+let currentCharIndex = 0;
+let currentWord = "";
+let isTyping = true;
+let cursorVisible = true;
+
+$w.onReady(function () {
+    const textElement = $w("#text");
+    typeText(textElement);
+});
+
+function typeText(textElement) {
+    if (isTyping) {
+        if (cursorVisible) {
+            textElement.text += "|";
+            cursorVisible = false;
+        } else {
+            if (currentCharIndex < phrases[currentPhraseIndex].length) {
+                currentWord += phrases[currentPhraseIndex][currentCharIndex];
+                textElement.text = currentWord + "|";
+                currentCharIndex++;
+            } else {
+                cursorVisible = true;
+                isTyping = false;
+                setTimeout(() => eraseText(textElement), 1000);
+            }
+        }
+        setTimeout(() => typeText(textElement), 100);
+    }
+}
+
+function eraseText(textElement) {
+    if (textElement.text.length > 0) {
+        textElement.text = textElement.text.substring(0, textElement.text.length - 1);
+        setTimeout(() => eraseText(textElement), 50);
+    } else {
+        currentCharIndex = 0;
+        currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
+        currentWord = "";
+        isTyping = true;
+        setTimeout(() => typeText(textElement), 1000);
+    }
+}
